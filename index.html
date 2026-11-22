@@ -112,6 +112,69 @@
     section {
       padding: 3rem 0
     }
+
+    /* animations */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(16px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    #home .grid>div {
+      animation: fadeUp .7s ease both
+    }
+
+    #home .grid>div:last-child {
+      animation-delay: .15s
+    }
+
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .6s ease, transform .6s ease
+    }
+
+    .js .reveal.show {
+      opacity: 1;
+      transform: none
+    }
+
+    .card,
+    .btn,
+    .chip {
+      transition: transform .2s ease, border-color .2s ease
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent)
+    }
+
+    .btn:hover {
+      transform: translateY(-2px)
+    }
+
+    .chip:hover {
+      border-color: var(--accent)
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      * {
+        animation: none !important;
+        transition: none !important
+      }
+
+      .js .reveal {
+        opacity: 1;
+        transform: none
+      }
+    }
   </style>
 </head>
 
@@ -265,6 +328,23 @@
       try { var saved = localStorage.getItem('theme'); if (saved) root.setAttribute('data-theme', saved); } catch (e) { }
       label();
       btn.addEventListener('click', function () { var n = isDark() ? 'light' : 'dark'; root.setAttribute('data-theme', n); try { localStorage.setItem('theme', n); } catch (e) { } label(); });
+    })();
+  </script>
+  <script>
+    (function () {
+      if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      document.documentElement.classList.add('js');
+      var els = document.querySelectorAll('section:not(#home) h2, section:not(#home) .card');
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          var el = en.target;
+          el.classList.add('show');
+          io.unobserve(el);
+          setTimeout(function () { el.classList.remove('reveal', 'show'); el.style.transitionDelay = ''; }, 900);
+        });
+      }, { threshold: 0.12 });
+      els.forEach(function (el, i) { el.classList.add('reveal'); el.style.transitionDelay = (i % 3) * 80 + 'ms'; io.observe(el); });
     })();
   </script>
 </body>
